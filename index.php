@@ -1,49 +1,135 @@
 <?php
 session_start();
+
 require 'config/db.php';
 
-// Si ya está logueado, redirige al dashboard
-if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
-    exit;
-}
-
-$error = '';
+$toast = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        // Login exitoso
+
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['nombre'] = $user['nombre'];
+        $_SESSION['user_name'] = $user['nombre'];
+
         header("Location: dashboard.php");
-        exit;
+        exit();
     } else {
-        $error = "Email o contraseña incorrectos";
+
+        $toast = "Email o contraseña incorrectos";
     }
 }
-
-
 ?>
 
-<h2>Iniciar sesión</h2>
+<!DOCTYPE html>
+<html lang="es">
 
-<?php if ($error): ?>
-    <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
-<?php endif; ?>
+<head>
 
-<form method="POST" action="index.php">
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="password" name="password" placeholder="Contraseña" required><br>
-    <button type="submit">Iniciar sesión</button>
-</form>
+    <meta charset="UTF-8">
+    <title>Login</title>
 
-<p>¿No tienes cuenta? <a href="register.php">Regístrate aquí</a></p>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<?php include 'templates/footer.php'; ?>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            height: 100vh;
+        }
+
+        .auth-card {
+            width: 420px;
+            border-radius: 15px;
+        }
+    </style>
+
+</head>
+
+<body class="d-flex justify-content-center align-items-center">
+
+    <div class="card auth-card shadow-lg p-4">
+
+        <div class="text-center mb-4">
+
+            <h3 class="fw-bold">Iniciar sesión</h3>
+            <p class="text-muted">Sistema Inventario</p>
+
+        </div>
+
+        <form method="POST">
+
+            <div class="mb-3">
+                <input type="email" name="email" class="form-control" placeholder="Correo electrónico">
+            </div>
+
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Contraseña">
+            </div>
+
+            <button class="btn btn-primary w-100 mb-3">
+                Entrar
+            </button>
+
+            <div class="text-center">
+
+                <span class="text-muted">¿No tienes cuenta?</span>
+
+                <a href="register.php" class="fw-semibold text-decoration-none">
+                    Crear cuenta
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <?php if ($toast): ?>
+
+        <div class="position-fixed top-0 end-0 p-3" style="z-index:9999">
+
+            <div id="liveToast" class="toast text-bg-danger border-0">
+
+                <div class="d-flex">
+
+                    <div class="toast-body">
+                        <?php echo $toast ?>
+                    </div>
+
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                var toastEl = document.getElementById("liveToast");
+
+                var toast = new bootstrap.Toast(toastEl, {
+                    delay: 3000
+                });
+
+                toast.show();
+
+            });
+        </script>
+
+    <?php endif; ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
