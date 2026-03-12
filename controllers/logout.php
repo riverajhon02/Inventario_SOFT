@@ -9,5 +9,5 @@ session_unset();
 session_destroy();
 
 // Redirige al login (o index.php si allí está tu formulario de login)
-header("Location: index.php");
+header("Location: ../index.php");
 exit;

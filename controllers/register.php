@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require 'config/db.php';
+require '../config/db.php';
 
 $toast = "";
 $toastType = "";
@@ -104,7 +104,7 @@ Crear cuenta
 
 <div class="text-center">
 <span class="text-muted">¿Ya tienes cuenta?</span>
-<a href="index.php">Iniciar sesión</a>
+<a href="../index.php">Iniciar sesión</a>
 </div>
 
 </form>

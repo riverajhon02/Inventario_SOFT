@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require 'config/db.php';
+require './config/db.php';
 
 $toast = null;
 
@@ -19,12 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['nombre'];
-
-        header("Location: dashboard.php");
+        $_SESSION['toast'] = "Login exitoso";
+        $_SESSION['toast_type'] = "success";
+        $toast = "Login Exitoso";
+        header("Location: ./pages/Dashboard.php");
         exit();
     } else {
 
         $toast = "Email o contraseña incorrectos";
+        $toast_type = "danger";
     }
 }
 ?>
@@ -82,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <span class="text-muted">¿No tienes cuenta?</span>
 
-                <a href="register.php" class="fw-semibold text-decoration-none">
+                <a href="./controllers/register.php" class="fw-semibold text-decoration-none">
                     Crear cuenta
                 </a>
 
@@ -92,43 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 
-    <?php if ($toast): ?>
+    <?php include './includes/alerta.php'; ?>
 
-        <div class="position-fixed top-0 end-0 p-3" style="z-index:9999">
 
-            <div id="liveToast" class="toast text-bg-danger border-0">
-
-                <div class="d-flex">
-
-                    <div class="toast-body">
-                        <?php echo $toast ?>
-                    </div>
-
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-
-                var toastEl = document.getElementById("liveToast");
-
-                var toast = new bootstrap.Toast(toastEl, {
-                    delay: 3000
-                });
-
-                toast.show();
-
-            });
-        </script>
-
-    <?php endif; ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
